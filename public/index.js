@@ -1,97 +1,78 @@
-// const WebSocket = require("ws"); // REMOVED - not needed in browser
-// const readline = require("readline");
 const chatContainer = document.querySelector("#chatDiv")
-const chatSendButton = document.querySelector("#chatSendButton") // Added # here too
+const chatSendButton = document.querySelector("#chatSendButton")
 const chatInput = document.querySelector("#chatInput")
 const nameInput = document.querySelector("#nameInput")
+const userCount = document.querySelector("#userCount")
 
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 const ws = new WebSocket(`${protocol}//${window.location.host}`);
-// const { Command } = require("commander");
-// const program = new Command();
-
-// const rl = readline.createInterface({
-//   input: process.stdin,
-//   output: process.stdout,
-// });
 
 let userName = "Anonymous"
 
 nameInput.addEventListener("change", () => {
     userName = nameInput.value
 })
-// let changingName = false
-// let messageCount = 0
 
 ws.onopen = () => {
-
-    // rl.setPrompt("> ");
-    // rl.prompt();
-
-    // rl.on("line", (line) => {
-        
-        // const trimmed = line.trim();
-
-        // if (trimmed === "/quit") {
-        //   ws.close();
-        //   rl.close();
-        //   return;
-        // }
-
-        // if (changingName) {
-        //     userName = trimmed
-        //     changingName = false
-        // }
-
-        // if (trimmed === "/changeName") {
-        //     messageCount = 1
-        //     event = "changeName"
-        //     changingName = true
-        //     console.log("Enter your new name: ")
-        // }
-
-        chatSendButton.addEventListener("click", () => {
-            if (chatInput.value == "") {
-                return
-            } else {
-                data = {
-                    event: "message",
-                    name: userName,
-                    message: chatInput.value // Changed from trimmed
-                }
-
-                ws.send(JSON.stringify(data));
-                chatInput.value = ""
-            }
-
-        })
-
-
-
-    //     rl.prompt();
-    // })
-
-
-
-    
+    ws.send(JSON.stringify({ event: "userJoined" }))
+    chatSendButton.addEventListener("click", sendMessage)
+    document.addEventListener("keydown", (event) => {
+        if (event.key == "Enter") {
+            sendMessage()
+        }
+    })
 }
 
 ws.onmessage = (event) => {
-    const msg = JSON.parse(event.data) // Changed from data.toString() to event.data
-    // readline.clearLine(process.stdout, 0)
-    // readline.cursorTo(process.stdout, 0)
-    if (msg.sent) {
-        chatContainer.innerHTML += `<p id="chatMessageRight">${msg.name}: ${msg.message}</p>`
-    } else {
-        chatContainer.innerHTML += `<p id="chatMessageLeft">${msg.name}: ${msg.message}</p>`
-    }
+    const msg = JSON.parse(event.data)
     
-    console.log(`${msg.name}: ${msg.message}`)
-    // rl.prompt()
+    if (msg.event == "userJoined") {
+        userCount.innerHTML = `<h3 id="userCount">Users in the room: ${msg.userCount}</h3>`
+    }
+    else if (msg.event == "message"){
+        const safeName = escapeHtml(msg.name);
+        const safeMessage = escapeHtml(msg.message);
+        
+        if (msg.sent) {
+            chatContainer.innerHTML += `<div class="messageWrapper sent">
+                                            <p id="chatMessageRight">${safeName}: ${safeMessage}</p>
+                                            <p class="timeStamp">${msg.dateTime}</p>
+                                        </div>`
+        } else {
+            chatContainer.innerHTML += `<div class="messageWrapper">
+                                            <p id="chatMessageLeft">${safeName}: ${safeMessage}</p>
+                                            <p class="timeStamp">${msg.dateTime}</p>
+                                        </div>`
+        }
+
+        chatContainer.scrollTop = chatContainer.scrollHeight
+        
+        console.log(`${msg.name}: ${msg.message}`)
+    }
 }
 
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 
-// function handleMessage(msgData) {
-//     const msg = JSON.parse(msgData.toString())
-//     console.log(`${msg.name} has sent the message: ${msg.message}`)
-// }
+function sendMessage() {
+    if (chatInput.value == "") {
+        return
+    } else {
+        const date = new Date()
+        const hours = date.getHours()
+        const minutes = date.getMinutes()
+        const seconds = date.getSeconds()
+        data = {
+            event: "message",
+            name: userName,
+            message: chatInput.value,
+            dateTime: `${hours}:${minutes}:${seconds}`
+        }
+
+        ws.send(JSON.stringify(data));
+        chatInput.value = ""
+    }
+}

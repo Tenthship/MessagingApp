@@ -6,6 +6,7 @@ const app = express()
 const server = http.createServer(app)
 
 const wss = new WebSocket.Server({ server });
+let userCount = 0
 
 app.use(express.static("public"))
 
@@ -14,6 +15,18 @@ wss.on("connection", (ws) => {
 
     ws.on("message", (data) => {
         const msg = JSON.parse(data.toString())
+        if (msg.event == "userJoined") {
+            userCount += 1
+            wss.clients.forEach((client) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({ event: "userJoined",
+                       userCount: userCount
+                    }))
+                }
+            })
+
+        }
+        
         if (msg.event == "message") {
             console.log("Message recieved")
             console.log(msg)
@@ -24,14 +37,18 @@ wss.on("connection", (ws) => {
                         sent: true,
                         event: "message",
                         name: msg.name,
-                        message: msg.message
+                        message: msg.message,
+                        dateTime: msg.dateTime
+                        
                     }
                 } else if (client.readyState == WebSocket.OPEN && client !== ws) {
                     msgData = {
                         sent: false,
                         event: "message",
                         name: msg.name,
-                        message: msg.message
+                        message: msg.message,
+                        dateTime: msg.dateTime
+            
                     }
                 }
 
@@ -41,6 +58,17 @@ wss.on("connection", (ws) => {
 
 
 
+    })
+
+    ws.on("close", () => {
+        userCount -= 1
+        wss.clients.forEach((client) => {
+            if (client.readyState == WebSocket.OPEN) {
+                client.send(JSON.stringify({ event: "userJoined",
+                       userCount: userCount
+                    }))
+            }
+        })
     })
 })
 
