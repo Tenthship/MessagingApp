@@ -1,0 +1,79 @@
+/* 
+#chatDiv {
+    height: 500px;
+    width: 600px;
+    padding: 5px;
+    margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.909);
+    overflow: scroll;
+    padding-left: 5px;
+}
+
+#chatMessageLeft {
+    padding-left: 5px;
+    color: rgba(255, 255, 255, 0.587);
+    background-color: gray;
+    border-radius: 10px;
+    width: 200px;
+    float: left;
+    overflow: scroll;
+    clear: both;
+}
+
+#chatMessageRight {
+    box-sizing: border-box;
+    padding-left: 5px;
+    color: rgba(255, 255, 255, 0.587);
+    background-color: rgba(94, 190, 231, 0.616);
+    border-radius: 10px;
+    width: 200px;
+    float: right;
+    clear: both;
+}
+
+#inputContainer {
+    width: 600px;
+    display: flex;
+    justify-content: space-between;
+} */
+
+#chatDiv {
+    height: 500px; /* Fixed height */
+    width: 600px;
+    padding: 5px;
+    margin-top: 10px;
+    background-color: rgba(0, 0, 0, 0.909);
+    overflow: scroll; /* Scroll when content exceeds height */
+    padding-left: 5px;
+}
+
+#chatMessageLeft {
+    padding-left: 5px;
+    color: rgba(255, 255, 255, 0.587);
+    background-color: gray;
+    border-radius: 10px;
+    max-width: 70%;
+    width: fit-content;
+    float: left;
+    clear: both;
+    word-wrap: break-word;
+}
+
+#chatMessageRight {
+    box-sizing: border-box;
+    padding-left: 5px;
+    color: rgba(255, 255, 255, 0.587);
+    background-color: rgba(94, 190, 231, 0.616);
+    border-radius: 10px;
+    max-width: 70%;
+    width: fit-content;
+    float: right;
+    clear: both;
+    word-wrap: break-word;
+}
+
+#inputContainer {
+    width: 600px;
+    display: flex;
+    justify-content: space-between;
+}
