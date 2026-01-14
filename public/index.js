@@ -5,7 +5,7 @@ const chatSendButton = document.querySelector("#chatSendButton") // Added # here
 const chatInput = document.querySelector("#chatInput")
 const nameInput = document.querySelector("#nameInput")
 
-const ws = new WebSocket("ws://localhost:3000");
+const ws = new WebSocket(`ws://${window.location.host}`);
 // const { Command } = require("commander");
 // const program = new Command();
 

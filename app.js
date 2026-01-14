@@ -1,6 +1,13 @@
-const WebSocket = require("ws");
+const WebSocket = require("ws")
+const express = require("express")
+const http = require("http")
 
-const wss = new WebSocket.Server({ port: 3000 });
+const app = express()
+const server = http.createServer(app)
+
+const wss = new WebSocket.Server({ server });
+
+app.use(express.static("public"))
 
 wss.on("connection", (ws) => {
     console.log("Up and running")
@@ -35,4 +42,9 @@ wss.on("connection", (ws) => {
 
 
     })
+})
+
+const PORT = process.env.PORT || 3000
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
 })
