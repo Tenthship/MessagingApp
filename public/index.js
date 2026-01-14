@@ -61,15 +61,17 @@ function sendMessage() {
     if (chatInput.value == "") {
         return
     } else {
-        const date = new Date()
-        const hours = date.getHours()
-        const minutes = date.getMinutes()
-        const seconds = date.getSeconds()
+        const now = new Date();
+        const standardTime = now.toLocaleString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        })
         data = {
             event: "message",
             name: userName,
             message: chatInput.value,
-            dateTime: `${hours}:${minutes}:${seconds}`
+            dateTime: standardTime
         }
 
         ws.send(JSON.stringify(data));
